@@ -342,26 +342,38 @@ export default function Page() {
 
 
                 <div className="pt-2">
-                  <h3 className="mb-2 text-lg font-semibold text-slate-800">Напитки</h3>
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                    {drinks.map((d)=>(
-                      <label key={d.id} className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white/70 p-3 hover:shadow-sm">
-                        <Checkbox checked={selectedDrinks.includes(d.id)} onChange={(e)=>{
-                          const checked = (e.target as HTMLInputElement).checked;
-                          const id = d.id; setSelectedDrinks(prev => checked ? [...prev, id] : prev.filter(x=>x!==id));
-                        }} />
-                        <span className="text-slate-800">{d.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
+  <h3 className="mb-2 text-lg font-semibold text-slate-800">Напитки</h3>
+  <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+    {drinks.map((d) => (
+      <label
+        key={d.id}
+        className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white/70 p-3 hover:shadow-sm"
+      >
+        <Checkbox
+          checked={selectedDrinks.includes(d.id)}
+          onCheckedChange={(checked) => {
+            const isChecked = !!checked;
+            const id = d.id;
+            setSelectedDrinks((prev) =>
+              isChecked ? [...prev, id] : prev.filter((x) => x !== id)
+            );
+          }}
+        />
+        <span className="text-slate-800">{d.label}</span>
+      </label>
+    ))}
+  </div>
+</div>
                 <label className="mt-2 flex items-start gap-2 text-sm text-slate-700">
-                  <Checkbox checked={agree} onChange={(e)=>setAgree((e.target as HTMLInputElement).checked)} />
-                  <span className="leading-snug">
-                    Я даю согласие на обработку персональных данных в целях организации круглого стола. Ответственный: {brand}. Срок хранения — до завершения мероприятия и закрытия отчётности.
-                  </span>
-                </label>
+  <Checkbox
+    checked={agree}
+    onCheckedChange={(checked) => setAgree(!!checked)}
+  />
+  <span className="leading-snug">
+    Я даю согласие на обработку персональных данных в целях организации круглого стола. Ответственный: {brand}. Срок хранения — до завершения мероприятия и закрытия отчётности.
+  </span>
+</label>
+
 
                 <div className="flex items-center gap-3 pt-4">
                   <Button type="submit" disabled={!canSubmit} className="px-6">{sending ? "Отправка..." : "Отправить заявку"}</Button>
