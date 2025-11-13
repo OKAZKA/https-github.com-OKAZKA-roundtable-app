@@ -73,7 +73,8 @@ export default function Page() {
   const [fio, setFio] = useState("");
   const [phone, setPhone] = useState("");
   const [clinic, setClinic] = useState("");
-  const [menu, setMenu] = useState("opt1");
+  const [menu, setMenu] = useState("");
+
   const [selectedDrinks, setSelectedDrinks] = useState<string[]>([]);
   const [agree, setAgree] = useState(false);
 
@@ -290,26 +291,55 @@ export default function Page() {
                   <Input id="clinic" value={clinic} onChange={(e)=>setClinic(e.target.value)} placeholder="№__ городская поликлиника" required />
                 </div>
 
-                <div className="pt-2">
-                  <h3 className="mb-2 text-lg font-semibold text-slate-800">Выбор меню</h3>
-                  <RadioGroup value={menu} onValueChange={setMenu} className="space-y-3">
-                    {menuOptions.map((opt)=>(
-                      <label key={opt.id} className={`flex cursor-pointer gap-3 rounded-2xl border border-slate-200 bg-white/70 p-3 transition hover:shadow-sm`}>
-                        <RadioGroupItem value={opt.id} className="mt-1" />
-                        <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-3">
-                          <div className="col-span-2">
-                            <div className="font-medium leading-snug text-slate-800">{opt.title}</div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2">
-                            {opt.images.map((src,i)=>(
-                              <img key={i} src={src} alt="Иллюстрация блюда" className="h-16 w-full rounded-xl object-cover ring-1 ring-slate-200/60" loading="lazy"/>
-                            ))}
-                          </div>
-                        </div>
-                      </label>
-                    ))}
-                  </RadioGroup>
+               <div className="pt-2">
+  <h3 className="mb-2 text-lg font-semibold text-slate-800">Выбор меню</h3>
+  <RadioGroup
+    value={menu}
+    onValueChange={(value) => setMenu(value)}
+    className="space-y-3"
+  >
+    {menuOptions.map((opt) => {
+      const isSelected = menu === opt.id;
+      return (
+        <div
+          key={opt.id}
+          className={`flex items-stretch gap-3 rounded-2xl border bg-white/80 p-3 transition 
+          ${isSelected ? "border-blue-600 ring-2 ring-blue-300" : "border-slate-200 hover:border-blue-300 hover:shadow-sm"}`}
+        >
+          <RadioGroupItem
+            value={opt.id}
+            id={opt.id}
+            className="mt-1"
+          />
+          <Label htmlFor={opt.id} className="grid w-full cursor-pointer grid-cols-1 gap-2 sm:grid-cols-3">
+            <div className="col-span-2">
+              <div className="font-medium leading-snug text-slate-800">
+                {opt.title}
+              </div>
+              {isSelected && (
+                <div className="mt-1 inline-flex rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                  Выбрано
                 </div>
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {opt.images.map((src, i) => (
+                <img
+                  key={i}
+                  src={src}
+                  alt="Иллюстрация блюда"
+                  className="h-16 w-full rounded-xl object-cover ring-1 ring-slate-200/60"
+                  loading="lazy"
+                />
+              ))}
+            </div>
+          </Label>
+        </div>
+      );
+    })}
+  </RadioGroup>
+</div>
+
 
                 <div className="pt-2">
                   <h3 className="mb-2 text-lg font-semibold text-slate-800">Напитки</h3>
