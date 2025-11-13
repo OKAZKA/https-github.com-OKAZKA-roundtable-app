@@ -1,0 +1,12 @@
+# SMTP конфигурация для отправки писем
+SMTP_HOST=smtp.mail.ru
+SMTP_PORT=465
+SMTP_USER=your_login@mail.ru
+SMTP_PASS=your_app_password
+EMAIL_FROM=your_login@mail.ru
+
+# Куда отправлять заявки (или укажи в коде)
+EMAIL_TO=your-email@example.com
+NEXT_PUBLIC_EMAIL_TO=your-email@example.com
+
+NEXT_PUBLIC_SITE_URL=https://example.com/roundtable
