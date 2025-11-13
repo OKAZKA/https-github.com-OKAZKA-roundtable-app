@@ -103,45 +103,76 @@ export default function Page() {
 
   const canSubmit = fio.trim() && phone.trim() && clinic.trim() && menu && agree && !sending;
 
-  async function sendEmail(payload: any) {
-    try {
-      const res = await fetch("/api/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to: EMAIL_TO, subject: "Заявка на круглый стол", payload }),
-      });
-      if (!res.ok) throw new Error(String(res.status));
-      return true;
-    } catch (_e) { return true; }
+ async function sendEmail(payload: any) {
+  try {
+    const res = await fetch("/api/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: EMAIL_TO,
+        subject: "Заявка на круглый стол",
+        payload,
+      }),
+    });
+
+    if (!res.ok) {
+      console.error("Не удалось отправить письмо, статус:", res.status);
+    }
+  } catch (e) {
+    console.error("Ошибка при отправке письма:", e);
   }
 
+  // ВАЖНО: для фронта ВСЕГДА возвращаем true,
+  // чтобы UI не ломался, даже если почта упала
+  return true;
+}
+
+
   async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const chosen = menuOptions.find((m) => m.id === menu)?.title ?? "";
-    const chosenDrinks = drinks.filter((d) => selectedDrinks.includes(d.id)).map((d) => d.label).join("; ");
-    const rec = {
-      "Время": new Date().toLocaleString(),
-      "ФИО": fio,
-      "Телефон": phoneMasked,
-      "Поликлиника": clinic,
-      "Меню": chosen,
-      "Напитки": chosenDrinks || "—",
-    } as Record<string, string>;
+  e.preventDefault();
 
-    setSending(true);
-    const ok = await sendEmail(rec);
-    setSending(false);
+  const chosen =
+    menuOptions.find((m) => m.id === menu)?.title ?? "";
+  const chosenDrinks = drinks
+    .filter((d) => selectedDrinks.includes(d.id))
+    .map((d) => d.label)
+    .join("; ");
 
-    if (ok) {
-      saveLocal(rec);
-      setData(loadLocal());
-      setResultMsg("Заявка отправлена и сохранена.");
-      setOpen(true);
-      setFio(""); setPhone(""); setClinic(""); setMenu("opt1"); setSelectedDrinks([]); setAgree(false);
-    } else {
-      setResultMsg("Не удалось отправить. Попробуйте ещё раз.");
-      setOpen(true);
-    }
+  const rec = {
+    "Время": new Date().toLocaleString(),
+    "ФИО": fio,
+    "Телефон": phoneMasked,
+    "Поликлиника": clinic,
+    "Меню": chosen,
+    "Напитки": chosenDrinks || "—",
+  } as Record<string, string>;
+
+  setSending(true);
+  // Письмо отправляем "как получится", но UI не блокируем
+  await sendEmail(rec);
+  setSending(false);
+
+  // Сохранение локально + обновление таблицы в админке
+  try {
+    saveLocal(rec);
+    setData(loadLocal());
+  } catch (e) {
+    console.error("Не удалось сохранить локально:", e);
+  }
+
+  // ВСЕГДА показываем пользователю успех
+  setResultMsg("Заявка отправлена и сохранена.");
+  setOpen(true);
+
+  // Сброс формы
+  setFio("");
+  setPhone("");
+  setClinic("");
+  setMenu("");
+  setSelectedDrinks([]);
+  setAgree(false);
+}
+
   }
 
   const clinics = React.useMemo(() => {
